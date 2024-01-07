@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import Loader from "./components/Loader";
 import MoviesList from "./components/MoviesList";
 import "./App.css";
+import Form from "./components/InputForm";
 
 function App() {
   const [movies, setMovies] = useState([]);
@@ -15,7 +16,7 @@ function App() {
 
     const retryAPI = async () => {
       try {
-        const response = await fetch("https://swapi.dev/api/film");
+        const response = await fetch("https://swapi.dev/api/films");
         if (!response.ok) {
           throw new Error("Something went wrong... Retrying");
         }
@@ -53,6 +54,9 @@ function App() {
 
   return (
     <React.Fragment>
+      <section>
+        <Form/>
+      </section>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
         <button onClick={cancelRetry}>Cancel Retry</button>
