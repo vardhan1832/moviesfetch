@@ -1,17 +1,15 @@
-import React, {useState} from "react";
+import React from "react";
 
-const Form = ()=>{
-    const [movie, setmovie] = useState({})
+const Form = (props)=>{
     const savemovie = (event) =>{
         event.preventDefault()
         const obj = {
             title: event.target.title.value,
-            openingtext:event.target.Openingtext.value,
+            openingText:event.target.Openingtext.value,
             date:new Date(event.target.date.value)
         }
-        setmovie({...obj})
+        props.addmovie(obj)
     }
-    console.log(movie)
     return (
         <form onSubmit={savemovie}>
             <label htmlFor="title">Tilte:</label>

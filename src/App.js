@@ -16,18 +16,21 @@ function App() {
 
     const retryAPI = async () => {
       try {
-        const response = await fetch("https://swapi.dev/api/films");
+        const response = await fetch("https://movies-dummy-default-rtdb.firebaseio.com/movies.json");
         if (!response.ok) {
           throw new Error("Something went wrong... Retrying");
         }
         const data = await response.json();
-        const films = data.results.map((film) => ({
-          id: film.episode_id,
-          title: film.title,
-          releaseDate: film.opening_crawl,
-          openingText: film.release_date,
-        }));
-        setMovies(films);
+        const loadedMovies = []
+        for(let key in data){
+          loadedMovies.push({
+            id:key,
+            title:data[key].title,
+            releaseDate:data[key].date,
+            openingText:data[key].openingText
+          })
+        }
+        setMovies(loadedMovies);
         setLoading(false);
       } catch (err) {
           const timer = setTimeout(retryAPI, 5000);
@@ -51,11 +54,29 @@ function App() {
   useEffect(() => {
     fetchMoviesHandler();
   }, [fetchMoviesHandler]);
-
+  const addmoviehandler = async (obj) =>{
+    await fetch('https://movies-dummy-default-rtdb.firebaseio.com/movies.json', {
+      method:'POST',
+      body:JSON.stringify(obj),
+      headers:{
+        'Content-Type':'application/json'
+      }
+    })
+    fetchMoviesHandler()
+  }
+  const deleteHandler = async (id)=>{
+    await fetch(`https://movies-dummy-default-rtdb.firebaseio.com/movies/${id}.json`,{
+      method:'DELETE',
+      headers:{
+        'Content-Type':"application/json"
+      }
+    })
+    fetchMoviesHandler()
+  }
   return (
     <React.Fragment>
       <section>
-        <Form/>
+        <Form addmovie={addmoviehandler}/>
       </section>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
@@ -63,7 +84,7 @@ function App() {
       </section>
       <section>
         {isLoading && <Loader />}
-        {!isLoading && <MoviesList movies={movies} />}
+        {!isLoading && <MoviesList movies={movies} delete={deleteHandler}/>}
         {!isLoading && error && <p>{error}</p>}
       </section>
     </React.Fragment>
